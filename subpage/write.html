@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>写的一些小东西</title>
+    <style>
+    
+     
+    * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background:linear-gradient(45deg, #191a19 0%, #346156 100%);
+    font-family: 'Segoe UI', 'Microsoft YaHei', 'PingFang SC', system-ui, sans-serif;
+    padding: 20px;
+    min-height: 100vh;
+
+    justify-content: center;
+    align-items: center;
+}
+
+ul {
+    list-style: none;
+}
+
+a {
+    text-decoration: none
+}
+
+
+
+
+.nav {
+    width: 100%;
+    height: 55px;
+
+
+}
+
+.nav-in {
+    width: 900px;
+    height: 55px;
+    margin: 0 auto;
+
+}
+
+.nav-in>ul>li {
+    width: 135px;
+    height: 55px;
+    text-align: center;
+    line-height: 55px;
+    float: left;
+    position: relative;
+}
+
+
+.nav-in a {
+    color: #469b5c;
+    font: bold 16px "微软雅黑";
+    position: relative;
+    z-index: 99;
+
+}
+
+.nav-in a:hover {
+    color: red;
+
+}
+
+.nav-in ul li ul {
+    background-color: #1918181a;
+    text-align: left;
+    padding-left: 15px;
+    display: none;
+}
+
+.nav-in ul li ul a {
+   color: #37eb67;
+}
+
+.nav-in ul li:hover ul {
+    display: block;
+    position: relative;
+    z-index: 99;
+
+
+}
+.grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    justify-content: center;
+    max-width: 1300px;
+    width: 100%;
+    margin: 0 auto;
+    position: relative;
+    max-height: fit-content;
+}
+
+.card {
+    flex: 1 1 320px;
+    max-width: 980px;
+    background: #368b7e;
+    border-radius: 32px;
+    padding: 24px 24px 30px;
+    box-shadow: 0 25px 40px -15px black, inset 0 1px 2px rgba(255, 255, 255, 0.08);
+    border: 1px solid #2b505c;
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-8px);
+    border-color: #4f9fb0;
+    box-shadow: 0 30px 50px -18px #00ccff33;
+}
+
+.card h2 {
+    color: #d3ecf0;
+    font-weight: 400;
+    letter-spacing: 4px;
+    font-size: 22px;
+    margin-bottom: 18px;
+    padding-bottom: 10px;
+    border-bottom: 2px dashed #35717e;
+    text-transform: uppercase;
+}
+.code-snip p{
+    font-size: 18px;
+    color: #f7fdeaa7;
+}
+.one{
+    color: #edea0c;
+    text-align: right;
+}
+.two{
+    position: absolute;
+    bottom: 20px;
+    right: 15%;
+    font-size: 18px;
+    color:#ebf3d1b4 ;
+     
+}
+    </style>
+
+
+</head>
+
+<body>
+    <div class="nav">
+        <div class="nav-in">
+            <ul>
+                <li><a href="../index.html">首 页</a> </li>
+                <li><a href="#"> 回忆录 ▼</a>
+                    <ul>
+                        <li><a href="https://www.bilibili.com/video/BV1KQ4y1J7Lk/?share_source=copy_web&vd_source=857ef6034527271bbf9f06043676fa87" target="_blank">>2023年联欢会</a></li>
+                        <li><a href="#">>2024年生日会</a></li>
+                        <li><a href="https://www.bilibili.com/video/BV1UkSnYBEnA/?share_source=copy_web&vd_source=857ef6034527271bbf9f06043676fa87"target="_blank">>2024年万粉</a></li>
+                        <li><a href="https://www.bilibili.com/video/BV1DhkNYLEPG/?share_source=copy_web&vd_source=857ef6034527271bbf9f06043676fa87"target="_blank">>2024年一周年</a></li>
+                        <li><a href="https://www.bilibili.com/video/BV1nb6ZY6EHh/?share_source=copy_web&vd_source=857ef6034527271bbf9f06043676fa87"target="_blank">>2025年联欢会</a></li>
+                        <li><a href="https://www.bilibili.com/video/BV1JXNseGEte/?share_source=copy_web&vd_source=857ef6034527271bbf9f06043676fa87"target="_blank">>2025年生日</a></li>
+                        <li><a href="https://www.bilibili.com/video/BV1PhBqB3Ez6/?share_source=copy_web&vd_source=857ef6034527271bbf9f06043676fa87"target="_blank">>2025年两周年</a></li>
+                        <li><a href="https://www.bilibili.com/video/BV15HihBKEeR/?share_source=copy_web&vd_source=857ef6034527271bbf9f06043676fa87"target="_blank">>2026年元旦</a></li>
+                        
+                        <li><a href="https://www.bilibili.com/video/BV1cjF7ziEUp/?share_source=copy_web&vd_source=857ef6034527271bbf9f06043676fa87">>2026年生日会</a></li>
+                        <li><a href="https://www.bilibili.com/video/BV1q8ctz8EaP/?share_source=copy_web&vd_source=857ef6034527271bbf9f06043676fa87">>2026年新春</a></li>
+
+                    </ul>
+                </li>
+
+                <li><a href="game.html">小游戏</a></li>
+                <li><a href="read.html">歌单</a></li>
+                <li><a href="develop.html">奇迹鸣子</a> </li>
+                <li><a href="write.html">写的一些小东西</a> </li>
+            </ul>
+
+
+        </div>
+    </div>
+    <div class="grid">
+        <div class="card">
+            <h2>◉一些小回忆 </h2>
+            <div class="code-snip">
+                <p>　　不知道你看到这个网站是什么时候（我只学了一个学期，对我来说首页真的很难做，没什么很好的创意，设计真的好难。写这封信也是断断续续地写的，想起一点写一点，可能到你手上已经有点过时了），但是是在今年你生日时起的想法，我在2月13日完成了歌单转盘（这个歌单转盘在这时候记录了135首歌曲，今年会不断更新，不知到你手上的时候是多少首呢，不过我也不知道齐不齐！歌单转盘下的标签，死活对不上转盘里的歌曲数，怎么都少了2首）。我对人真的很长情，一喜欢真的能维持很久，真正喜欢上的主播也不多，你就是其中的一个！喜欢驱使我写出这个网站（虽然使用了ai，但很多还要自己调试），是因为足够的喜欢（我真的是一个很懒的人，但让我有兴趣的事能坚持很久）。<br>　　我知道你真的挺久了，我也算是很早一批的鹅鸭杀观众，你第一次来这个局的时候，我在看韬韬的直播，后面狍子老师剪出来的那段才艺，我也推荐过给我的好朋友。当时你和烤梨抽卡打赌唱ziezie的时候，也在现场，但都没有真正的关注到你。那时学业真的太忙了，我到现在都不知道我当时忙了什么（那时候每天接触网络的时间也长，属于是高强度上网），但时间就像水一样流过了。最近又回看了23年的联欢晚会，还是会下意识地跟今年的对比，真的很有感触，没想到鹅鸭杀能陪伴我那么久（23年的切片真的很经典，太有效果了），也没想到鸣子老师能坚持那么久的直播，鹅鸭杀人来人往，留下来的也寥寥无几，至今仍会怀念当年的团建和晚会，大家的氛围真的很好，很让人开心，希望怂家军鹅鸭杀事业越来越好。<br>　　真正关注到你和深入了解你的时候我也进入了人生的新阶段，是25年的8月，关注你也是因为偶然刷到你在隔壁的歌切，你的说唱让我眼前一亮（我之前不爱听歌，但我身边的好朋友都很会唱歌，特别会流行和英文。我很难感受到歌曲中的情感，所以以前歌曲对我来说是一个可有可无的东西，我更喜欢能触动我内心的文字，但你也算是改变了我对歌曲的看法，歌曲也是有情感的），我很奇怪歌切能推到我的首页，缘分也由此开始。我算是个挺信命的人，只是觉得说缘分到了，自会喜欢上的，什么时候都不晚。不过也确实是你稳定的情绪，真诚的待人和向外输出的能量吸引了我，你真的是一个很温暖的人，我是infp-a，也是回避型人格（面对问题喜欢冷处理，对好朋友也总是保持一定的疏离），喜欢通过独处充电，独处真的会让我陷入一定的内耗和对往事的情感共鸣（很经常回忆着回忆着就哭了，经常是伴着哭入眠的）。你为人处世的态度和爽朗的笑声总能感染我，羡慕你有做出选择不后悔的勇气(这是我总做不到的)。关注到现在应该也快1年了，你真的很适合叙述感强的，这一年你的流行进步真的很大（一定要多唱哦）。<br>　　你总希望我们能做一个小孩，开开心心，快快乐乐，无忧无虑，对此我想说只要心中有小孩，就一定可以成为自己心中的小孩。你真的像一个温暖的小太阳，带给我们能量，要一直闪闪发光哦，也希望你不被自己的负面情绪绑架，能定期给自己放放假，休息休息。有那么多发鸣家能陪伴你，也是因为你已经很棒了，你值得。<br>　　不知不觉这里就1000多字了，我很少写那么长的信（写这封信时我也哭了很多次了，我也没想到这信给我自己的感触那么大），所以你在我心中也是挺特别的一个人，很高兴与你相遇，我们相互陪伴。最后希望你顺遂无虞，皆得所愿，坚信自己拥有无惧无畏的勇气和温暖他人的能量，唱歌变得越来越好，未来能收获更多陪伴你的发鸣家们，我想引用上次你生日匿名信中算挺触动我的一句话<br><span class="one"><em>“山高海阔，青山路远，我们永不落幕”</em></span><br><br>
+                </p>
+                <span class="two">　　　韩以莹<br>2026年2月26日初稿</span>
+
+            </div>
+        </div>
+        
+
+</body>
+
+</html>

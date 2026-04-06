@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>鸣子</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/swiper.min.css">
+    <style>
+        .swiper-container,
+        .swiper-container img {
+            width: 980px;
+            height: 500px;
+        }
+    </style>
+</head>
+<body>
+     <script src="js/swiper.min.js"></script>
+    <div class="swiper-container">
+        <div class="swiper-wrapper">
+            <div class="swiper-slide"><img src="images/主图.jpg " alt=""></div>
+            <div class="swiper-slide"><img src="images/佛祖.jpg " alt=""></div>
+            <div class="swiper-slide"><img src="images/bgc.jpg" alt=""></div>
+            <div class="swiper-slide"><img src="images/皮套.png" alt=""></div>
+            <div class="swiper-slide"><img src="images/名字.jpg" alt=""></div>
+            <div class="swiper-slide"><img src="images/皮影戏4.png" alt=""></div>
+        </div>
+        <!-- 如果需要分页器 -->
+        <div class="swiper-pagination"></div>
+
+        <!-- 如果需要导航按钮 -->
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-button-next"></div>
+
+        <!-- 如果需要滚动条 -->
+        <div class="swiper-scrollbar"></div>
+    </div>
+    <script>
+        var mySwiper = new Swiper('.swiper-container', {
+            parallax: true,
+            autoplay: {
+                delay: 4000,
+                stopOnLastSlide: false,
+                disableOnInteraction: false,
+            },
+            direction: 'horizontal', // 垂直切换选项
+            loop: true, // 循环模式选项
+
+            // 如果需要分页器
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+            },
+
+            // 如果需要前进后退按钮
+            navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+            },
+
+            // 如果需要滚动条
+            scrollbar: {
+                el: '.swiper-scrollbar',
+            },
+        })        
+    </script>
+    <div class="nav">
+        <div class="nav-in">
+            <ul>
+                <li><a href="#">首 页</a> </li>
+                <li><a href="#"> 回忆录 ▼</a>
+                    <ul>
+                        <li><a href="https://www.bilibili.com/video/BV1KQ4y1J7Lk/?share_source=copy_web&vd_source=857ef6034527271bbf9f06043676fa87" target="_blank">>2023年联欢会</a></li>
+                        <li><a href="#">>2024年生日会</a></li>
+                        <li><a href="https://www.bilibili.com/video/BV1UkSnYBEnA/?share_source=copy_web&vd_source=857ef6034527271bbf9f06043676fa87"target="_blank">>2024年万粉</a></li>
+                        <li><a href="https://www.bilibili.com/video/BV1DhkNYLEPG/?share_source=copy_web&vd_source=857ef6034527271bbf9f06043676fa87"target="_blank">>2024年一周年</a></li>
+                        <li><a href="https://www.bilibili.com/video/BV1nb6ZY6EHh/?share_source=copy_web&vd_source=857ef6034527271bbf9f06043676fa87"target="_blank">>2025年联欢会</a></li>
+                        <li><a href="https://www.bilibili.com/video/BV1JXNseGEte/?share_source=copy_web&vd_source=857ef6034527271bbf9f06043676fa87"target="_blank">>2025年生日</a></li>
+                        <li><a href="https://www.bilibili.com/video/BV1PhBqB3Ez6/?share_source=copy_web&vd_source=857ef6034527271bbf9f06043676fa87"target="_blank">>2025年两周年</a></li>
+                        <li><a href="https://www.bilibili.com/video/BV15HihBKEeR/?share_source=copy_web&vd_source=857ef6034527271bbf9f06043676fa87"target="_blank">>2026年元旦</a></li>
+                        
+                        <li><a href="https://www.bilibili.com/video/BV1cjF7ziEUp/?share_source=copy_web&vd_source=857ef6034527271bbf9f06043676fa87">>2026年生日会</a></li>
+                        <li><a href="https://www.bilibili.com/video/BV1q8ctz8EaP/?share_source=copy_web&vd_source=857ef6034527271bbf9f06043676fa87">>2026年新春</a></li>
+
+                    </ul>
+                </li>
+
+               
+                <li><a href="subpage/songs.html">歌单</a></li>
+                <li><a href="subpage/game.html">小游戏</a> </li> 
+                <li><a href="subpage/develop.html">奇迹鸣子</a></li>
+                <li><a href="subpage/write.html">写的一些小东西</a> </li>
+            </ul>
+            
+        </div>
+    </div>
+    <div class="grid">
+        <div class="card">
+            <h2>◉鸣子简介</h2>
+            
+            
+            <div class="code-snip">
+               <p><img src="images/图.png" alt="">　　一个情绪稳定、真诚、幽默，经常能给观众带来情绪价值，但很需要被观众关注和认可，总是很害怕冷场，期望场场直播都有节目，对自己高要求的一个爱唱说唱的电台主播。
+                </p> 
+            </div>
+        </div>
+    </div>
+    
+</body>
+</html>

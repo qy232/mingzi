@@ -1,0 +1,1253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数字炸弹 · 超链接锁定（带弹窗）</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        /* ===== 导航栏布局 ===== */
+        .nav {
+            width: 100%;
+            max-width: 1200px;
+            margin-bottom: 20px;
+        }
+
+        /* 顶部状态栏 */
+        .top-bar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px 16px 0 0;
+            padding: 12px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.05);
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .site-title {
+            font-size: 20px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            padding: 5px 0;
+        }
+
+        /* 锁状态控制区 */
+        .lock-control {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: #f8f9fa;
+            padding: 5px 15px;
+            border-radius: 40px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .lock-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 16px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .lock-badge.locked {
+            background: linear-gradient(135deg, #ff8c00, #ff4757);
+            color: white;
+            box-shadow: 0 4px 15px rgba(255, 71, 87, 0.3);
+            animation: pulse 2s infinite;
+        }
+
+        .lock-badge.unlocked {
+            background: linear-gradient(135deg, #00b09b, #96c93d);
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 176, 155, 0.4);
+        }
+
+        .lock-badge.hidden {
+            display: none;
+        }
+
+        .lock-badge i {
+            font-size: 16px;
+        }
+
+        /* 步骤指示器 */
+        .step-indicator {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding-left: 15px;
+            border-left: 2px solid #e0e0e0;
+        }
+
+        .step-item {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #999;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .step-item.active {
+            background: #ff8c00;
+            color: white;
+            box-shadow: 0 0 0 3px rgba(255, 140, 0, 0.2);
+        }
+
+        .step-item.completed {
+            background: #00b09b;
+            color: white;
+        }
+
+        .step-line {
+            width: 25px;
+            height: 2px;
+            background: #e0e0e0;
+        }
+
+        .step-line.active {
+            background: #00b09b;
+        }
+
+        /* 导航菜单栏 */
+        .nav-menu {
+            background: white;
+            border-radius: 0 0 16px 16px;
+            padding: 0 20px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-menu ul {
+            display: flex;
+            list-style: none;
+            height: 55px;
+        }
+
+        .nav-menu>ul>li {
+            position: relative;
+        }
+
+        .nav-menu>ul>li>a {
+            display: block;
+            padding: 0 25px;
+            line-height: 55px;
+            color: #999;
+            font: bold 15px "微软雅黑";
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            pointer-events: none;
+            cursor: default;
+            border-bottom: 3px solid transparent;
+        }
+
+        .nav-menu>ul>li>a.unlocked {
+            color: #333;
+            pointer-events: auto;
+            cursor: pointer;
+        }
+
+        .nav-menu>ul>li>a.unlocked:hover {
+            color: #ff4757;
+            border-bottom-color: #ff4757;
+        }
+
+        /* 下拉菜单 */
+        .nav-menu ul ul {
+            position: absolute;
+            top: 55px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            padding: 8px 0;
+            min-width: 180px;
+            display: none;
+            z-index: 1000;
+            height: auto;
+        }
+
+        .nav-menu ul li:hover ul {
+            display: block;
+        }
+
+        .nav-menu ul ul li {
+            width: 100%;
+        }
+
+        .nav-menu ul ul a {
+            display: block;
+            padding: 10px 20px;
+            color: #999;
+            font-size: 14px;
+            white-space: nowrap;
+            transition: all 0.2s;
+            pointer-events: none;
+            cursor: default;
+            border-bottom: none;
+            line-height: normal;
+        }
+
+        .nav-menu ul ul a.unlocked {
+            color: #374feb;
+            pointer-events: auto;
+            cursor: pointer;
+        }
+
+        .nav-menu ul ul a.unlocked:hover {
+            background: #f0f2f5;
+            color: #ff4757;
+            padding-left: 25px;
+        }
+
+        /* ===== 炸弹小子欢迎弹窗 ===== */
+        .welcome-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 3000;
+            animation: fadeIn 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .welcome-modal .modal-content {
+            background: linear-gradient(145deg, #fff8e7, #ffffff);
+            border: 4px solid #ffb347;
+            border-radius: 24px;
+            padding: 40px;
+            text-align: center;
+            width: 90%;
+            max-width: 450px;
+            position: relative;
+            animation: scaleIn 0.3s ease;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 32px;
+            font-weight: bold;
+            color: #ff8c00;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(255, 140, 0, 0.1);
+            transition: all 0.2s;
+        }
+
+        .close-btn:hover {
+            background: rgba(255, 140, 0, 0.3);
+            transform: scale(1.1);
+        }
+
+        .bomboy-avatar {
+            font-size: 80px;
+            line-height: 1.4;
+            filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.2));
+            margin: 10px 0;
+            animation: bounce 2s ease infinite;
+        }
+
+        .welcome-modal h2 {
+            color: #ff8c00;
+            font-size: 42px;
+            margin-bottom: 15px;
+            text-shadow: 3px 3px 0 #ffe4b5;
+        }
+
+        .welcome-message {
+            font-size: 24px;
+            font-weight: 600;
+            color: #b45f06;
+            margin: 20px 0 10px;
+        }
+
+        .welcome-sub {
+            font-size: 20px;
+            color: #d2691e;
+            margin-bottom: 30px;
+            font-style: italic;
+        }
+
+        .welcome-modal .control-btn {
+            background: linear-gradient(135deg, #ff8c00, #ff4757);
+            box-shadow: 0 6px 0 0 #cc7000;
+            margin-top: 10px;
+            border: none;
+            min-width: 220px;
+            font-size: 20px;
+            padding: 15px 30px;
+            color: white;
+        }
+
+        .welcome-modal .control-btn:active {
+            top: 6px;
+            box-shadow: 0 0 0 0 #cc7000;
+        }
+
+        /* 浮动提示卡片 */
+        .floating-tip {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            max-width: 300px;
+            z-index: 2000;
+            border-left: 5px solid #ff8c00;
+            transition: all 0.3s;
+            animation: slideIn 0.5s;
+        }
+
+        .floating-tip.hidden {
+            display: none;
+        }
+
+        .floating-tip .tip-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .floating-tip .tip-icon {
+            width: 40px;
+            height: 40px;
+            background: #ff8c00;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+        }
+
+        .floating-tip .tip-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .floating-tip .tip-content {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .game-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+            width: 100%;
+            max-width: 800px;
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        h1 {
+            color: #2d3748;
+            margin-bottom: 20px;
+            font-size: 28px;
+        }
+
+        .audio-tip {
+            background-color: #fef3c7;
+            color: #92400e;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-size: 14px;
+            display: block;
+        }
+
+        .audio-tip.hidden {
+            display: none;
+        }
+
+        .volume-control {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 15px 0;
+            padding: 10px;
+            background-color: #f1f5f9;
+            border-radius: 8px;
+            flex-wrap: wrap;
+        }
+
+        .volume-btn {
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 50%;
+            background-color: #667eea;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s ease;
+            box-shadow: 0 2px 0 0 #4a57c9;
+            position: relative;
+            top: 0;
+        }
+
+        .volume-btn:active {
+            top: 2px;
+            box-shadow: 0 0 0 0 #4a57c9;
+        }
+
+        .volume-display {
+            min-width: 60px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .test-sound-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            background-color: #10b981;
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .game-info {
+            margin: 15px 0 25px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 12px;
+            border-left: 5px solid #667eea;
+        }
+
+        .range-text {
+            font-size: 18px;
+            color: #2d3748;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .hint-text {
+            font-size: 16px;
+            color: #4a5568;
+            min-height: 24px;
+        }
+
+        .number-grid {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 8px;
+            margin: 20px 0;
+        }
+
+        .number-btn {
+            padding: 12px 0;
+            border: none;
+            border-radius: 6px;
+            background-color: #e2e8f0;
+            color: #2d3748;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            box-shadow: 0 2px 0 0 #cbd5e1, 0 3px 5px rgba(0, 0, 0, 0.05);
+            position: relative;
+            top: 0;
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .number-btn:hover {
+            background-color: #cbd5e1;
+            box-shadow: 0 2px 0 0 #94a3b8, 0 3px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .number-btn:active {
+            top: 2px;
+            box-shadow: 0 0 0 0 #94a3b8, 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .number-btn.too-small {
+            background-color: #a7f3d0;
+            color: #065f46;
+            cursor: not-allowed;
+            animation: fadeOut 0.5s ease forwards;
+        }
+
+        .number-btn.too-big {
+            background-color: #fed7aa;
+            color: #9a3412;
+            cursor: not-allowed;
+            animation: fadeOut 0.5s ease forwards;
+        }
+
+        .number-btn.bomb {
+            background-color: #fecaca;
+            color: #991b1b;
+            animation: bounce 0.8s ease, bombPulse 1.5s ease infinite;
+            opacity: 1 !important;
+            transform: scale(1) !important;
+        }
+
+        @keyframes bombPulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+            }
+
+            70% {
+                box-shadow: 0 0 0 15px rgba(239, 68, 68, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+            }
+        }
+
+        @keyframes fadeOut {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.5;
+                transform: scale(0.9);
+            }
+
+            100% {
+                opacity: 0.1;
+                transform: scale(0.7);
+            }
+        }
+
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.2);
+            }
+        }
+
+        .control-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            background-color: #667eea;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            box-shadow: 0 4px 0 0 #4a57c9, 0 6px 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+            top: 0;
+            margin-top: 20px;
+        }
+
+        .control-btn:active {
+            top: 4px;
+            box-shadow: 0 0 0 0 #4a57c9, 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        #reset-btn {
+            background-color: #e53e3e;
+            box-shadow: 0 4px 0 0 #c02626, 0 6px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #reset-btn:active {
+            box-shadow: 0 0 0 0 #c02626, 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .result-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            justify-content: center;
+            align-items: center;
+            z-index: 2500;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .result-modal .modal-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 16px;
+            text-align: center;
+            width: 90%;
+            max-width: 400px;
+            animation: scaleIn 0.3s ease;
+        }
+
+        .result-modal h2 {
+            color: #991b1b;
+            margin-bottom: 15px;
+        }
+
+        .bomb-number {
+            font-size: 48px;
+            font-weight: bold;
+            color: #991b1b;
+            margin: 15px 0;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .top-bar {
+                flex-direction: column;
+                gap: 10px;
+                padding: 15px;
+            }
+
+            .nav-menu ul {
+                flex-wrap: wrap;
+                height: auto;
+                justify-content: center;
+            }
+
+            .nav-menu>ul>li>a {
+                padding: 0 15px;
+                line-height: 45px;
+            }
+
+            .floating-tip {
+                bottom: 20px;
+                right: 20px;
+                left: 20px;
+                max-width: none;
+            }
+
+            .number-grid {
+                grid-template-columns: repeat(8, 1fr);
+            }
+
+            .number-btn {
+                padding: 8px 0;
+                font-size: 12px;
+            }
+
+            .welcome-modal .modal-content {
+                padding: 30px 20px;
+            }
+
+            .welcome-modal h2 {
+                font-size: 32px;
+            }
+
+            .bomboy-avatar {
+                font-size: 60px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .number-grid {
+                grid-template-columns: repeat(5, 1fr);
+            }
+
+            .game-container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .volume-control {
+                gap: 8px;
+            }
+
+            .volume-btn {
+                width: 35px;
+                height: 35px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    
+    <div class="welcome-modal" id="welcome-modal">
+        <div class="modal-content">
+            <span class="close-btn" id="close-welcome-btn">&times;</span>
+            <div class="bomboy-avatar">💣😎💥</div>
+            
+            <div class="welcome-message">既然进来了，就玩一局吧！主包自己挑选挑战对象</div>
+            <div class="welcome-sub">惩罚就由那个人定吧 👀</div>
+            <button class="control-btn" id="start-game-btn">开始挑战</button>
+        </div>
+    </div>
+
+    <div class="nav">
+        <!-- 顶部状态栏 -->
+        <div class="top-bar">
+            <div class="site-title">💣 数字炸弹</div>
+
+            <!-- 锁状态控制区 -->
+            <div class="lock-control">
+                <!-- 锁定状态徽章 -->
+                <div class="lock-badge locked" id="lock-badge">
+                    <i>🔒</i>
+                    <span>导航已锁定</span>
+                </div>
+
+                <!-- 解锁状态徽章（初始隐藏） -->
+                <div class="lock-badge unlocked hidden" id="unlock-badge">
+                    <i>🔓</i>
+                    <span>导航已解锁</span>
+                </div>
+
+                <!-- 步骤指示器 -->
+                <div class="step-indicator">
+                    <div class="step-item active" id="step1">1</div>
+                    <div class="step-line" id="line1"></div>
+                    <div class="step-item" id="step2">2</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 导航菜单栏 -->
+        <div class="nav-menu">
+            <ul>
+                <li><a href="../index.html" id="nav-home" class="locked">首 页</a></li>
+                <li>
+                    <a href="#" id="nav-memory" class="locked">回忆录 ▼</a>
+                    <ul>
+                        <li><a href="https://www.bilibili.com/video/BV1KQ4y1J7Lk/?share_source=copy_web&vd_source=857ef6034527271bbf9f06043676fa87"
+                                target="_blank" class="locked">2023年联欢会</a></li>
+                        <li><a href="#" class="locked">2024年生日会</a></li>
+                        <li><a href="https://www.bilibili.com/video/BV1UkSnYBEnA/?share_source=copy_web&vd_source=857ef6034527271bbf9f06043676fa87"
+                                target="_blank" class="locked">2024年万粉</a></li>
+                        <li><a href="https://www.bilibili.com/video/BV1DhkNYLEPG/?share_source=copy_web&vd_source=857ef6034527271bbf9f06043676fa87"
+                                target="_blank" class="locked">2024年一周年</a></li>
+                        <li><a href="https://www.bilibili.com/video/BV1nb6ZY6EHh/?share_source=copy_web&vd_source=857ef6034527271bbf9f06043676fa87"
+                                target="_blank" class="locked">2025年联欢会</a></li>
+                        <li><a href="https://www.bilibili.com/video/BV1JXNseGEte/?share_source=copy_web&vd_source=857ef6034527271bbf9f06043676fa87"
+                                target="_blank" class="locked">2025年生日</a></li>
+                        <li><a href="https://www.bilibili.com/video/BV1PhBqB3Ez6/?share_source=copy_web&vd_source=857ef6034527271bbf9f06043676fa87"
+                                target="_blank" class="locked">2025年两周年</a></li>
+                        <li><a href="https://www.bilibili.com/video/BV15HihBKEeR/?share_source=copy_web&vd_source=857ef6034527271bbf9f06043676fa87"
+                                target="_blank" class="locked">2026年元旦</a></li>
+                        <li><a href="https://www.bilibili.com/video/BV1cjF7ziEUp/?share_source=copy_web&vd_source=857ef6034527271bbf9f06043676fa87"
+                                target="_blank" class="locked">2026年生日会</a></li>
+                        <li><a href="https://www.bilibili.com/video/BV1q8ctz8EaP/?share_source=copy_web&vd_source=857ef6034527271bbf9f06043676fa87"
+                                target="_blank" class="locked">2026年新春</a></li>
+                    </ul>
+                </li>
+                <li><a href="game.html" id="nav-game" class="locked">小游戏</a></li>
+                <li><a href="songs.html" id="nav-read" class="locked">歌单</a></li>
+                <li><a href="develop.html" id="nav-develop" class="locked">奇迹鸣子</a></li>
+                <li><a href="write.html" id="nav-write" class="locked">写的小东西</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 浮动提示卡片 -->
+    <div class="floating-tip" id="floating-tip">
+        <div class="tip-header">
+            <div class="tip-icon">🔒</div>
+            <div class="tip-title">导航已锁定</div>
+        </div>
+        <div class="tip-content">
+            <p>🎯 玩一局数字炸弹才能解锁导航栏哦！</p>
+            <p>💥 踩中炸弹后所有超链接就会亮起来~</p>
+        </div>
+    </div>
+
+    <div class="game-container">
+        <h1>数字炸弹 🎯 1-100</h1>
+
+        <div class="audio-tip" id="audio-tip">
+            🔔 请先点击页面任意位置解锁音频，才能播放音效！
+        </div>
+
+        <div class="volume-control">
+            <button class="volume-btn" id="volume-down-btn">🔉-</button>
+            <div class="volume-display" id="volume-display">80%</div>
+            <button class="volume-btn" id="volume-up-btn">🔉+</button>
+            <button class="volume-btn" id="mute-btn">🔇</button>
+            <button class="test-sound-btn" id="test-sound-btn">测试音效</button>
+        </div>
+
+        <div class="game-info">
+            <div class="range-text">当前范围：<span id="current-range">1 ~ 100</span></div>
+            <div class="hint-text" id="hint-text">点击下方数字按钮，猜猜哪个是炸弹！</div>
+        </div>
+
+        <div class="number-grid" id="number-grid"></div>
+
+        <button id="reset-btn" class="control-btn">重新开始游戏</button>
+    </div>
+
+    <div class="result-modal" id="result-modal">
+        <div class="modal-content">
+            <h2>💥 你踩到炸弹了！</h2>
+            <p>炸弹数字是：</p>
+            <div class="bomb-number" id="bomb-number"></div>
+            <button id="modal-reset-btn" class="control-btn">再来一局</button>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            let bombNumber;
+            let minRange = 1;
+            let maxRange = 100;
+            let gameOver = false;
+            let currentVolume = 0.8;
+            let isMuted = false;
+            let originalVolume = currentVolume;
+            let audioContext;
+            let audioUnlocked = false;
+            let linksUnlocked = false;
+
+            // DOM 元素
+            const audioTip = document.getElementById('audio-tip');
+            const volumeDownBtn = document.getElementById('volume-down-btn');
+            const volumeUpBtn = document.getElementById('volume-up-btn');
+            const muteBtn = document.getElementById('mute-btn');
+            const volumeDisplay = document.getElementById('volume-display');
+            const testSoundBtn = document.getElementById('test-sound-btn');
+            const numberGrid = document.getElementById('number-grid');
+            const currentRangeEl = document.getElementById('current-range');
+            const hintText = document.getElementById('hint-text');
+            const resultModal = document.getElementById('result-modal');
+            const bombNumberEl = document.getElementById('bomb-number');
+            const resetBtn = document.getElementById('reset-btn');
+            const modalResetBtn = document.getElementById('modal-reset-btn');
+
+            // 欢迎弹窗元素
+            const welcomeModal = document.getElementById('welcome-modal');
+            const closeWelcomeBtn = document.getElementById('close-welcome-btn');
+            const startGameBtn = document.getElementById('start-game-btn');
+
+            // 导航元素
+            const lockBadge = document.getElementById('lock-badge');
+            const unlockBadge = document.getElementById('unlock-badge');
+            const floatingTip = document.getElementById('floating-tip');
+            // 移除 progressBar 的引用
+            const step1 = document.getElementById('step1');
+            const step2 = document.getElementById('step2');
+            const line1 = document.getElementById('line1');
+            const allNavLinks = document.querySelectorAll('.nav-menu a');
+
+            // 关闭欢迎弹窗
+            function closeWelcomeModal() {
+                welcomeModal.style.display = 'none';
+                playBuiltInSound('click');
+            }
+
+            // 移除 updateProgress 函数，因为不再需要进度条
+
+            // 解锁所有链接
+            function unlockAllLinks() {
+                if (linksUnlocked) return;
+
+                linksUnlocked = true;
+
+                allNavLinks.forEach(link => {
+                    link.classList.add('unlocked');
+                    link.classList.remove('locked');
+                });
+
+                // 切换徽章
+                lockBadge.classList.add('hidden');
+                unlockBadge.classList.remove('hidden');
+
+                // 更新进度指示器
+                step1.classList.remove('active');
+                step1.classList.add('completed');
+                step1.textContent = '✓';
+                line1.classList.add('active');
+                step2.classList.add('active');
+                step2.textContent = '🔓';
+
+                // 更新浮动提示
+                floatingTip.innerHTML = `
+                    <div class="tip-header">
+                        <div class="tip-icon" style="background: #00b09b;">🔓</div>
+                        <div class="tip-title">导航已解锁！</div>
+                    </div>
+                    <div class="tip-content">
+                        <p>🎉 恭喜你完成了游戏！</p>
+                        <p>现在可以自由访问所有页面了~</p>
+                    </div>
+                `;
+
+                playBuiltInSound('explosion');
+            }
+
+            function initAudioContext() {
+                try {
+                    window.AudioContext = window.AudioContext || window.webkitAudioContext;
+                    audioContext = new AudioContext();
+                } catch (e) {
+                    alert("你的浏览器不支持音频播放！");
+                }
+            }
+
+            function unlockAudio() {
+                if (audioUnlocked || !audioContext) return;
+
+                if (audioContext.state === 'suspended') {
+                    audioContext.resume();
+                }
+
+                audioUnlocked = true;
+                audioTip.classList.add('hidden');
+                updateVolume();
+            }
+
+            function playBuiltInSound(type) {
+                if (!audioUnlocked || isMuted || !audioContext) return;
+                if (audioContext.state !== 'running') return;
+
+                if (type === 'click') {
+                    const osc = audioContext.createOscillator();
+                    const gainOsc = audioContext.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.value = 1320;
+                    gainOsc.gain.value = currentVolume * 0.2;
+                    osc.connect(gainOsc);
+                    gainOsc.connect(audioContext.destination);
+                    osc.start();
+                    gainOsc.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.08);
+                    osc.stop(audioContext.currentTime + 0.08);
+                } else if (type === 'explosion') {
+                    const now = audioContext.currentTime;
+                    const osc1 = audioContext.createOscillator();
+                    osc1.type = 'sawtooth';
+                    osc1.frequency.value = 120;
+                    const gain1 = audioContext.createGain();
+                    gain1.gain.value = currentVolume * 0.4;
+                    osc1.connect(gain1);
+                    gain1.connect(audioContext.destination);
+                    osc1.start();
+                    osc1.frequency.exponentialRampToValueAtTime(40, now + 0.4);
+                    gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
+                    osc1.stop(now + 0.8);
+                }
+            }
+
+            function updateVolume() {
+                if (!audioContext) return;
+                if (isMuted) {
+                    volumeDisplay.textContent = "0%";
+                    muteBtn.textContent = "🔊";
+                } else {
+                    volumeDisplay.textContent = `${Math.round(currentVolume * 100)}%`;
+                    muteBtn.textContent = "🔇";
+                }
+            }
+
+            function increaseVolume() {
+                if (isMuted) {
+                    isMuted = false;
+                    currentVolume = originalVolume;
+                }
+                currentVolume = Math.min(1.0, currentVolume + 0.1);
+                updateVolume();
+                playBuiltInSound('click');
+            }
+
+            function decreaseVolume() {
+                if (isMuted) {
+                    isMuted = false;
+                    currentVolume = originalVolume;
+                }
+                currentVolume = Math.max(0.0, currentVolume - 0.1);
+                updateVolume();
+                playBuiltInSound('click');
+            }
+
+            function toggleMute() {
+                if (isMuted) {
+                    isMuted = false;
+                    currentVolume = originalVolume;
+                } else {
+                    isMuted = true;
+                    originalVolume = currentVolume;
+                }
+                updateVolume();
+                playBuiltInSound('click');
+            }
+
+            function testSound() {
+                playBuiltInSound('click');
+                setTimeout(() => playBuiltInSound('explosion'), 400);
+            }
+
+            function initGame() {
+                bombNumber = Math.floor(Math.random() * 100) + 1;
+                minRange = 1;
+                maxRange = 100;
+                gameOver = false;
+
+                numberGrid.innerHTML = '';
+
+                for (let i = 1; i <= 100; i++) {
+                    const btn = document.createElement('button');
+                    btn.className = 'number-btn';
+                    btn.textContent = i;
+                    btn.dataset.number = i;
+                    btn.disabled = false;
+                    btn.classList.remove('too-small', 'too-big', 'bomb');
+                    btn.addEventListener('click', () => handleNumberClick(btn));
+                    numberGrid.appendChild(btn);
+                }
+
+                currentRangeEl.textContent = `${minRange} ~ ${maxRange}`;
+                hintText.textContent = "点击下方数字按钮，猜猜哪个是炸弹！";
+                resultModal.style.display = "none";
+            }
+
+            function handleNumberClick(btn) {
+                if (gameOver || btn.disabled) return;
+
+                playBuiltInSound('click');
+                const number = parseInt(btn.dataset.number);
+                btn.disabled = true;
+
+                // 移除进度条更新代码
+
+                if (number === bombNumber) {
+                    gameOver = true;
+                    btn.classList.add('bomb');
+                    playBuiltInSound('explosion');
+
+                    unlockAllLinks();
+
+                    setTimeout(() => {
+                        bombNumberEl.textContent = bombNumber;
+                        resultModal.style.display = "flex";
+                    }, 200);
+
+                    const allBtns = document.querySelectorAll('.number-btn');
+                    allBtns.forEach(b => {
+                        if (!b.disabled) {
+                            b.disabled = true;
+                            if (parseInt(b.dataset.number) < bombNumber) {
+                                b.classList.add('too-small');
+                            } else if (parseInt(b.dataset.number) > bombNumber) {
+                                b.classList.add('too-big');
+                            }
+                        }
+                    });
+
+                    hintText.textContent = `💥 炸弹数字是 ${bombNumber}！`;
+                    return;
+                }
+
+                if (number < bombNumber) {
+                    minRange = number + 1;
+                    btn.classList.add('too-small');
+                    hintText.textContent = `⬆️ ${number} 太小了！炸弹在 ${minRange} ~ ${maxRange} 之间`;
+                    disableNumbers(1, number);
+                } else {
+                    maxRange = number - 1;
+                    btn.classList.add('too-big');
+                    hintText.textContent = `⬇️ ${number} 太大了！炸弹在 ${minRange} ~ ${maxRange} 之间`;
+                    disableNumbers(number, 100);
+                }
+
+                currentRangeEl.textContent = `${minRange} ~ ${maxRange}`;
+            }
+
+            function disableNumbers(start, end) {
+                const btns = document.querySelectorAll('.number-btn');
+                btns.forEach(btn => {
+                    const num = parseInt(btn.dataset.number);
+                    if (num >= start && num <= end && !btn.disabled) {
+                        btn.disabled = true;
+                        if (num < bombNumber) {
+                            btn.classList.add('too-small');
+                        } else if (num > bombNumber) {
+                            btn.classList.add('too-big');
+                        }
+                    }
+                });
+            }
+
+            // 事件绑定
+            document.addEventListener('click', unlockAudio);
+
+            // 欢迎弹窗事件
+            closeWelcomeBtn.addEventListener('click', closeWelcomeModal);
+            startGameBtn.addEventListener('click', closeWelcomeModal);
+            welcomeModal.addEventListener('click', (e) => {
+                if (e.target === welcomeModal) {
+                    closeWelcomeModal();
+                }
+            });
+
+            volumeUpBtn.addEventListener('click', increaseVolume);
+            volumeDownBtn.addEventListener('click', decreaseVolume);
+            muteBtn.addEventListener('click', toggleMute);
+            testSoundBtn.addEventListener('click', testSound);
+
+            resetBtn.addEventListener('click', () => {
+                playBuiltInSound('click');
+                initGame();
+                // 移除进度条重置代码
+            });
+
+            modalResetBtn.addEventListener('click', () => {
+                playBuiltInSound('click');
+                initGame();
+                resultModal.style.display = "none";
+            });
+
+            resultModal.addEventListener('click', (e) => {
+                if (e.target === resultModal) {
+                    playBuiltInSound('click');
+                    initGame();
+                    resultModal.style.display = "none";
+                }
+            });
+
+            // 初始化
+            window.onload = () => {
+                initAudioContext();
+                initGame();
+
+                // 显示欢迎弹窗
+                welcomeModal.style.display = 'flex';
+
+                allNavLinks.forEach(link => {
+                    link.classList.add('locked');
+                    link.classList.remove('unlocked');
+                });
+
+                lockBadge.classList.remove('hidden');
+                unlockBadge.classList.add('hidden');
+                linksUnlocked = false;
+            };
+        })();
+    </script>
+</body>
+
+</html>

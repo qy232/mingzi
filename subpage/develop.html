@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>奇迹鸣子换装</title>
+    <style>
+        /* 整体布局样式 */
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 10px; /* 减少整体内边距 */
+            background:linear-gradient(45deg, #191a19 0%, #346156 100%);
+            min-height: 100vh;
+            
+        }
+        ul {
+    list-style: none;
+}
+
+a {
+    text-decoration: none
+}
+
+
+
+
+.nav {
+    width: 100%;
+    height: 55px;
+
+
+}
+
+.nav-in {
+    width: 980px;
+    height: 55px;
+    margin: 0 auto;
+
+}
+
+.nav-in>ul>li {
+    width: 135px;
+    height: 55px;
+    text-align: center;
+    line-height: 55px;
+    float: left;
+    position: relative;
+}
+
+
+.nav-in a {
+    color: #ee7a2dd0;
+    font: bold 16px "微软雅黑";
+    position: relative;
+    z-index: 99;
+
+}
+
+.nav-in a:hover {
+    color: red;
+
+}
+
+.nav-in ul li ul {
+    background-color: #1918181a;
+    text-align: left;
+    padding-left: 15px;
+    display: none;
+}
+
+.nav-in ul li ul a {
+    color: #e4831bc4;
+}
+
+.nav-in ul li:hover ul {
+    display: block;
+    position: relative;
+    z-index: 99;
+
+
+}
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        
+
+        h3 {
+            margin: 8px 0 5px 0; /* 大幅减少分类标题间距 */
+            font-size: 16px; /* 缩小分类标题 */
+            color: #333;
+        }
+
+        /* 鸭子展示区域 */
+        .duck-wrapper {
+            position: relative;
+            width: 300px; /* 缩小展示区尺寸 */
+            height: 300px;
+            margin: 10px auto; /* 减少上下间距 */
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .duck-base {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        /* 所有装扮的基础样式 - 绝对定位实现叠加 */
+        .accessory {
+            position: absolute;
+            object-fit: contain;
+            display: none;
+            pointer-events: none;
+        }
+
+        /* 各装扮的位置和尺寸适配（按展示区缩小比例调整） */
+        /* 帽子 */
+        .hat-1 { width: 47%; top: 3%; left: 30%; }
+        .hat-2 { width: 61%; top: 5px; left: 25%; }
+        .hat-3 { width: 53%; top: 10px; left: 25%; }
+        .hat-4 { width: 55%; top: 10px; left: 22%; }
+        .hat-5 { width: 44%; top: 5px; left: 31%; }
+        .hat-6 { width: 59%; top: 21px; left: 18%; }
+        .hat-8 { width: 49%; top: -21px; left: 30%; }
+        .hat-9 { width: 53%; top: -6px; left: 24%; }
+
+        /* 衣服 */
+        .cloth-1 { width: 68%; top: 29%; left: 14%; }
+        .cloth-2 { width: 55%; top: 25%; left: 22%; }
+
+        /* 眼镜 */
+        .eyes-1 { width: 32%; top: 21%; left: 36%; }
+        .eyes-2 { width: 38%; top: 15%; left: 31%; }
+        .eyes-3 { width: 43%; top: 16%; left: 29%; }
+        .eyes-4 { width: 41%; top: 15%; left: 28%; }
+
+        /* 按钮区域样式 - 核心调整：流式布局+小尺寸按钮 */
+        .btn-group {
+            margin: 8px 0;
+            display: flex;
+            flex-wrap: wrap; /* 自动换行 */
+            justify-content: center; /* 居中对齐 */
+            gap: 5px; /* 按钮间距（替代margin） */
+        }
+
+        /* 分类标题独占一行 */
+        .btn-group h3 {
+            width: 100%;
+            text-align: center;
+            margin: 5px 0;
+        }
+
+        button {
+           padding: 9px 18px; /* 从6px 12px放大到9px 18px，按钮更饱满 */
+            border: none;
+            border-radius: 8px; /* 圆角放大，更舒适 */
+            background: linear-gradient(135deg, #77f09137 10%, #39d81d7b 90%);
+            color: white;
+            cursor: pointer;
+            font-size: 14px; /* 从12px放大到14px，文字更清晰 */
+            flex: 0 0 auto;
+            margin: 0;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            min-width: 70px; /* 给按钮最小宽度，避免太窄 */
+        }
+
+        button:hover {
+            color: #fe380c;
+        }
+
+        button.active {
+            background-color: #0b0b0b;
+        }
+       
+
+        .reset-btn {
+            background-color: #fca311;
+            /* 重置按钮独占一行 */
+            width: 180px;
+            margin-top: 5px !important;
+        }
+
+        .reset-btn:hover {
+            background-color: #e59400;
+        }
+    </style>
+</head>
+
+<body>
+      <div class="nav">
+        <div class="nav-in">
+            <ul>
+                <li><a href="../index.html">首 页</a> </li>
+                <li><a href="#"> 回忆录 ▼</a>
+                     <ul>
+                        <li><a href="https://www.bilibili.com/video/BV1KQ4y1J7Lk/?share_source=copy_web&vd_source=857ef6034527271bbf9f06043676fa87" target="_blank">>2023年联欢会</a></li>
+                        <li><a href="#">>2024年生日会</a></li>
+                        <li><a href="https://www.bilibili.com/video/BV1UkSnYBEnA/?share_source=copy_web&vd_source=857ef6034527271bbf9f06043676fa87"target="_blank">>2024年万粉</a></li>
+                        <li><a href="https://www.bilibili.com/video/BV1DhkNYLEPG/?share_source=copy_web&vd_source=857ef6034527271bbf9f06043676fa87"target="_blank">>2024年一周年</a></li>
+                        <li><a href="https://www.bilibili.com/video/BV1nb6ZY6EHh/?share_source=copy_web&vd_source=857ef6034527271bbf9f06043676fa87"target="_blank">>2025年联欢会</a></li>
+                        <li><a href="https://www.bilibili.com/video/BV1JXNseGEte/?share_source=copy_web&vd_source=857ef6034527271bbf9f06043676fa87"target="_blank">>2025年生日</a></li>
+                        <li><a href="https://www.bilibili.com/video/BV1PhBqB3Ez6/?share_source=copy_web&vd_source=857ef6034527271bbf9f06043676fa87"target="_blank">>2025年两周年</a></li>
+                        <li><a href="https://www.bilibili.com/video/BV15HihBKEeR/?share_source=copy_web&vd_source=857ef6034527271bbf9f06043676fa87"target="_blank">>2026年元旦</a></li>
+                        
+                        <li><a href="https://www.bilibili.com/video/BV1cjF7ziEUp/?share_source=copy_web&vd_source=857ef6034527271bbf9f06043676fa87">>2026年生日会</a></li>
+                        <li><a href="https://www.bilibili.com/video/BV1q8ctz8EaP/?share_source=copy_web&vd_source=857ef6034527271bbf9f06043676fa87">>2026年新春</a></li>
+
+                    </ul>
+                </li>
+
+                <li><a href="game.html">小游戏</a></li>
+                <li><a href="songs.html">歌单</a></li>
+                <li><a href="develop.html">奇迹鸣子</a> </li>
+                <li><a href="write.html">写的一些小东西</a> </li>
+            </ul>
+
+
+        </div>
+    </div>
+    <div class="container">
+       
+
+        <!-- 鸭子展示区 -->
+        <div class="duck-wrapper" id="duckWrapper">
+            <!-- 红皮鸭子本体（替换成你的图片链接即可） -->
+            <img src="../images/红皮鸭子.png" class="duck-base" alt="红皮鸭子">
+            <!-- 装扮元素：眼镜 -->
+            <img src="../images/星辰.png" class="accessory eyes-1" id="eyes1" alt="星辰1">
+            <img src="../images/蓝色.png" class="accessory eyes-2" id="eyes2" alt="蓝色">
+            <img src="../images/绿色.png" class="accessory eyes-3" id="eyes3" alt="绿色">
+            <img src="../images/黑色.png" class="accessory eyes-4" id="eyes4" alt="黑色">
+
+            <!-- 装扮元素：帽子 -->
+            <img src="../images/红头发.png" class="accessory hat-1" id="hat1" alt="红头发">
+            <img src="../images/本命.png" class="accessory hat-2" id="hat2" alt="本命头">
+            <img src="../images/小帽子.png" class="accessory hat-3" id="hat3" alt="小帽子">
+            <img src="../images/北极熊帽子.png" class="accessory hat-4" id="hat4" alt="北极熊">
+            <img src="../images/蓝色帽子.png" class="accessory hat-5" id="hat5" alt="蓝色帽子">
+            <img src="../images/电视.png" class="accessory hat-6" id="hat6" alt="电视帽">
+            <img src="../images/鸡.png" class="accessory hat-8" id="hat8" alt="鸡">
+            <img src="../images/蓝色皇冠.png" class="accessory hat-9" id="hat9" alt="蓝色皇冠">
+
+            <!-- 装扮元素：衣服 -->
+            <img src="../images/披风.png" class="accessory cloth-1" id="cloth1" alt="披风">
+            <img src="https://p3-flow-imagex-sign.byteimg.com/ocean-cloud-tos/62d22f8a8f6a4568905d444444444444~tplv-a9rns2rl98-image.png?rk3s=18ea6f23&x-expires=1740739200&x-signature=CLOTH2"
+                class="accessory cloth-2" id="cloth2" alt="背带裤">
+        </div>
+
+        <!-- 操作按钮区 -->
+        <div class="btn-group">
+            <h3>眼睛</h3>
+            <button onclick="toggleAccessory('eyes1', this)">星辰</button>
+            <button onclick="toggleAccessory('eyes2', this)">蓝色</button>
+            <button onclick="toggleAccessory('eyes3', this)">绿色</button>
+            <button onclick="toggleAccessory('eyes4', this)">黑色</button>
+
+            <h3>头发</h3>
+            <button onclick="toggleAccessory('hat1', this)">红头发</button>
+            <button onclick="toggleAccessory('hat2', this)">本命头</button>
+            <button onclick="toggleAccessory('hat3', this)">小帽子</button>
+            <button onclick="toggleAccessory('hat4', this)">北极熊</button>
+            <button onclick="toggleAccessory('hat5', this)">蓝色帽子</button>
+            <button onclick="toggleAccessory('hat6', this)">电视帽</button>
+            <button onclick="toggleAccessory('hat8', this)">鸡</button>
+            <button onclick="toggleAccessory('hat9', this)">蓝色皇冠</button>
+
+            <h3>衣服</h3>
+            <button onclick="toggleAccessory('cloth1', this)">披风</button>
+            <button onclick="toggleAccessory('cloth2', this)">背带裤</button>
+
+            <h3>重置</h3>
+            <button class="reset-btn" onclick="resetAll()">清空所有装扮</button>
+        </div>
+    </div>
+
+    <script>
+        // 切换装扮显示/隐藏，同时改变按钮状态
+        function toggleAccessory(accessoryId, btn) {
+            const accessory = document.getElementById(accessoryId);
+            if (accessory.style.display === 'block') {
+                accessory.style.display = 'none';
+                btn.classList.remove('active');
+            } else {
+                accessory.style.display = 'block';
+                btn.classList.add('active');
+            }
+        }
+
+        // 重置所有装扮为隐藏，按钮恢复默认状态
+        function resetAll() {
+            // 隐藏所有装扮
+            const allAccessories = document.querySelectorAll('.accessory');
+            allAccessories.forEach(item => {
+                item.style.display = 'none';
+            });
+            // 重置所有按钮样式
+            const allBtns = document.querySelectorAll('button');
+            allBtns.forEach(btn => {
+                btn.classList.remove('active');
+            });
+        }
+    </script>
+</body>
+
+</html>
